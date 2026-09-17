@@ -1,0 +1,125 @@
+/* =============================================================
+   motion.css — every moving part. Same contract as the sample:
+   base.css describes the page at rest, this file only adds a
+   pre-state plus a transition, and all of it is gated behind
+   :root[data-motion="on"]. The document ships with motion off,
+   so nothing is ever hidden from a visitor whose JS did not run.
+   ============================================================= */
+
+/* ─────────── reveals ─────────── */
+:root[data-motion="on"] [data-reveal]{
+  opacity:0;
+  transform:translate3d(var(--rv-x,0),var(--rv-y,0),0) scale(var(--rv-s,1));
+  transition:opacity var(--dur-reveal) var(--ease-out) var(--d,0s),
+             transform var(--dur-reveal) var(--ease-out) var(--d,0s);
+  will-change:transform,opacity;
+}
+:root[data-motion="on"] [data-reveal="rise"] { --rv-y:36px; }
+:root[data-motion="on"] [data-reveal="left"] { --rv-x:calc(-1 * min(56px, var(--gutter) * 0.7)); }
+:root[data-motion="on"] [data-reveal="right"]{ --rv-x:min(56px, calc(var(--gutter) * 0.7)); }
+:root[data-motion="on"] [data-reveal="scale"]{ --rv-s:.94; }
+:root[data-motion="on"] [data-reveal="mask"] { --rv-y:22px; filter:blur(5px); }
+:root[data-motion="on"] [data-reveal].is-in{
+  opacity:1;--rv-x:0;--rv-y:0;--rv-s:1;filter:none;
+}
+[data-reveal].is-settled{--rv-x:0;--rv-y:0;--rv-s:1;transition:none;will-change:auto}
+
+/* ─────────── hero entrance ─────────── */
+:root[data-motion="on"] [data-hero-item]{
+  opacity:0;transform:translate3d(0,var(--hy,20px),0);
+  transition:opacity .95s var(--ease-out) var(--d,0s),
+             transform 1.1s var(--ease-out) var(--d,0s);
+  will-change:transform,opacity;
+}
+:root[data-motion="on"] .hero__h1 .line{--hy:0px}
+:root[data-motion="on"] .hero__h1 .line > span{
+  display:block;transform:translate3d(0,108%,0);opacity:0;
+  transition:transform 1.2s var(--ease-out) var(--d,0s),opacity .7s linear var(--d,0s);
+}
+:root[data-motion="on"] [data-hero-item].is-in{opacity:1;transform:none}
+:root[data-motion="on"] .hero__h1 .line.is-in > span{transform:none;opacity:1}
+
+/* ─────────── the framework builds itself ───────────
+   The three members grow upward out of the ground line, one after the
+   other, and the ties draw across between them. This is the one piece of
+   motion on the page that is about the brand rather than about motion:
+   the copy says growth is poured from the ground up, so the diagram is.  */
+:root[data-motion="on"] .frame .member{
+  transform-box:fill-box;transform-origin:50% 100%;
+  transform:scaleY(0);
+}
+:root[data-motion="on"] .frame .tie{
+  transform-box:fill-box;transform-origin:0 50%;
+  transform:scaleX(0);
+}
+:root[data-motion="on"] .frame__hatch,
+:root[data-motion="on"] .frame__marks{opacity:0}
+:root[data-motion="on"] .frame__ground > line{
+  transform-box:fill-box;transform-origin:0 50%;transform:scaleX(0);
+}
+
+:root[data-motion="on"] .hero__figure.is-in .frame__ground > line{
+  transform:none;transition:transform 1s var(--ease-out) .15s;
+}
+:root[data-motion="on"] .hero__figure.is-in .member{
+  transform:none;
+  transition:transform 1.15s var(--ease-out) calc(.55s + var(--i) * .16s);
+}
+:root[data-motion="on"] .hero__figure.is-in .tie{
+  transform:none;transition:transform .8s var(--ease-out) 1.25s;
+}
+:root[data-motion="on"] .hero__figure.is-in .tie:nth-child(2){transition-delay:1.4s}
+:root[data-motion="on"] .hero__figure.is-in .tie:nth-child(3){transition-delay:1.55s}
+:root[data-motion="on"] .hero__figure.is-in .frame__hatch{opacity:.4;transition:opacity .9s ease .95s}
+:root[data-motion="on"] .hero__figure.is-in .frame__marks{opacity:1;transition:opacity .9s ease 1.6s}
+
+/* idle: the tie-lines march slowly, the way a survey drawing reads.
+   Three short dashed lines only — small enough to stay cheap. */
+:root[data-motion="on"] .hero__figure.is-in .tie{animation:march 14s linear 2.4s infinite}
+@keyframes march{from{stroke-dashoffset:0}to{stroke-dashoffset:-32}}
+
+/* ─────────── micro-interactions, all inside 300ms ─────────── */
+:root[data-motion="on"] .nav{transition:background var(--dur-hover) var(--ease-soft),
+                                        border-color var(--dur-hover) var(--ease-soft)}
+:root[data-motion="on"] .nav__links a{transition:color 170ms var(--ease-soft)}
+:root[data-motion="on"] .nav__links a::after{transition:transform 230ms var(--ease-out)}
+:root[data-motion="on"] .nav__links a:hover{color:var(--ink)}
+:root[data-motion="on"] .nav__links a:hover::after{transform:scaleX(1)}
+
+:root[data-motion="on"] .btn{
+  transition:transform 210ms var(--ease-out),
+             box-shadow var(--dur-hover) var(--ease-out),
+             background var(--dur-hover) var(--ease-out);
+}
+:root[data-motion="on"] .btn > span,:root[data-motion="on"] .btn > svg{
+  transition:transform 210ms var(--ease-out);
+}
+:root[data-motion="on"] .btn:hover{box-shadow:0 12px 28px -14px rgba(31,48,84,.6)}
+:root[data-motion="on"] .btn--lead:hover{box-shadow:0 14px 32px -14px rgba(169,118,58,.75)}
+:root[data-motion="on"] .btn:hover svg{transform:translateX(3px)}
+.btn.is-magnetised{transition:box-shadow var(--dur-hover) var(--ease-out) !important}
+.btn.is-releasing{transition:transform 580ms cubic-bezier(.18,1.4,.4,1),
+                             box-shadow var(--dur-hover) var(--ease-out) !important}
+
+:root[data-motion="on"] .specs > div{transition:border-color var(--dur-hover) var(--ease-soft)}
+:root[data-motion="on"] .specs > div:hover{border-bottom-color:var(--brass)}
+
+/* ─────────── reduced motion ─────────── */
+@media (prefers-reduced-motion:reduce){
+  :root[data-motion="on"] *,
+  :root[data-motion="on"] *::before,
+  :root[data-motion="on"] *::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  :root[data-motion="on"] [data-reveal],
+  :root[data-motion="on"] [data-hero-item],
+  :root[data-motion="on"] .hero__h1 .line > span,
+  :root[data-motion="on"] .frame .member,
+  :root[data-motion="on"] .frame .tie,
+  :root[data-motion="on"] .frame__ground > line{
+    opacity:1 !important;transform:none !important;filter:none !important;
+  }
+  :root[data-motion="on"] .frame__hatch{opacity:.4 !important}
+  :root[data-motion="on"] .frame__marks{opacity:1 !important}
+}
